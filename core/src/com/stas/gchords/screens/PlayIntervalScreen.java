@@ -1,4 +1,4 @@
-package com.stas.gchords;
+package com.stas.gchords.screens;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,10 +10,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.stas.gchords.App;
+import com.stas.gchords.Consts;
+import com.stas.gchords.Interval;
+import com.stas.gchords.PianoKeyboard;
+import com.stas.gchords.Resources;
+import com.stas.gchords.Synth;
 
 import javax.sound.midi.MidiUnavailableException;
 
-public class PlayIntervalTesterScreen extends AStageScreen {
+public class PlayIntervalScreen extends AStageScreen {
     Synth synth;
     PlayIntervalTester tester;
     PianoKeyboard pianoKeyboard;

@@ -1,7 +1,10 @@
-package com.stas.gchords;
+package com.stas.gchords.screens;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+import com.stas.gchords.Interval;
+import com.stas.gchords.Synth;
+import com.stas.gchords.Util;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;

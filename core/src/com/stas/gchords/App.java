@@ -3,6 +3,7 @@ package com.stas.gchords;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Timer;
+import com.stas.gchords.screens.MainScreen;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;

@@ -1,4 +1,4 @@
-package com.stas.gchords;
+package com.stas.gchords.screens;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,13 +11,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.stas.gchords.App;
+import com.stas.gchords.Consts;
+import com.stas.gchords.Resources;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 
 public class MainScreen extends AStageScreen {
     Label midiDataLabel;
@@ -73,7 +75,7 @@ public class MainScreen extends AStageScreen {
         TextButton playIntervalTesterScreenBtn = new TextButton("play intervals", skin);
         playIntervalTesterScreenBtn.addListener(new ClickListener() {
            public void clicked(InputEvent e, float x, float y) {
-               App.setAppScreen(new PlayIntervalTesterScreen());
+               App.setAppScreen(new PlayIntervalScreen());
            }
         });
         menu.addActor(playIntervalTesterScreenBtn);
