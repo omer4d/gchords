@@ -7,7 +7,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-public class Tester implements Receiver {
+public class PlayIntervalTester implements Receiver {
     private Synth synth;
     private int prev;
     private int expected;
@@ -19,7 +19,7 @@ public class Tester implements Receiver {
         void onUpdateTesterStats(int correct, int total);
     }
 
-    public Tester(Synth synth) {
+    public PlayIntervalTester(Synth synth) {
         this.synth = synth;
         this.intervalEnabled = new Interval[Interval.values().length];
 
