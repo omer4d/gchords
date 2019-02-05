@@ -2,60 +2,22 @@ package com.stas.gchords;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 
 public class PlayIntervalTesterScreen extends AStageScreen {
-    MidiDevice midiInDevice;
-
     Synth synth;
     PlayIntervalTester tester;
     PianoKeyboard pianoKeyboard;
     Label stats;
-
-    private static Array<MidiDevice.Info> getMidiInDevices() {
-        Array<MidiDevice.Info> inDevs = new Array<MidiDevice.Info>();
-        MidiDevice.Info[] devInfos = MidiSystem.getMidiDeviceInfo();
-
-        for(int i = 0; i < devInfos.length; ++i) {
-            try {
-                MidiDevice dev = MidiSystem.getMidiDevice(devInfos[i]);
-                if(dev.getMaxTransmitters() != 0) {
-                    inDevs.add(devInfos[i]);
-                }
-            } catch (MidiUnavailableException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return inDevs;
-    }
-
-    private void setMidiInDevice(MidiDevice.Info info) {
-        if(midiInDevice != null) {
-            midiInDevice.close();
-        }
-        try {
-            midiInDevice = MidiSystem.getMidiDevice(info);
-            midiInDevice.open();
-            midiInDevice.getTransmitter().setReceiver(tester);
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        }
-
-        tester.reset();
-        tester.replay();
-        refreshView();
-    }
 
     private void refreshView() {
         int correct = tester.getCorrect();
@@ -73,11 +35,15 @@ public class PlayIntervalTesterScreen extends AStageScreen {
 
         synth = new Synth("samples");
         tester = new PlayIntervalTester(synth);
+        try {
+            App.getInstance().getMidiInDevice().getTransmitter().setReceiver(tester);
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
+        }
 
         stats = new Label("0", skin);
         stats.setPosition(400, 400);
         stage.addActor(stats);
-
 
         pianoKeyboard = new PianoKeyboard(
                 new TextureRegion(Resources.pianoWhiteKey),
@@ -88,22 +54,6 @@ public class PlayIntervalTesterScreen extends AStageScreen {
         pianoKeyboard.setPosition(200, 450);
         pianoKeyboard.setKeyMarked(tester.getPrevious(), true);
         stage.addActor(pianoKeyboard);
-
-
-
-
-        final SelectBox<MidiDevice.Info> selectBox = new SelectBox<MidiDevice.Info>(skin);
-        selectBox.setItems(getMidiInDevices());
-        selectBox.setWidth(200);
-
-        selectBox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                setMidiInDevice(selectBox.getSelected());
-            }
-        });
-        setMidiInDevice(selectBox.getSelected());
-
 
         final Interval[] intervals = Interval.values();
 
@@ -129,7 +79,14 @@ public class PlayIntervalTesterScreen extends AStageScreen {
             }
         });
 
-        stage.addActor(selectBox);
+        TextButton back = new TextButton("Back", skin);
+        back.setPosition(Consts.IDEAL_SCR_W - 200, 100);
+        back.addListener(new ClickListener() {
+           public void clicked(InputEvent e, float x, float y) {
+               App.setAppScreen(new MainScreen());
+           }
+        });
+        stage.addActor(back);
     }
 
     @Override
@@ -145,13 +102,5 @@ public class PlayIntervalTesterScreen extends AStageScreen {
     @Override
     public void hide() {
 
-    }
-
-    public void dispose() {
-        if(midiInDevice != null) {
-            midiInDevice.close();
-        }
-
-        super.dispose();
     }
 }
