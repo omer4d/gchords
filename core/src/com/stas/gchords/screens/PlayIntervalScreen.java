@@ -10,39 +10,51 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.stas.gchords.App;
 import com.stas.gchords.Consts;
 import com.stas.gchords.Interval;
-import com.stas.gchords.PianoKeyboard;
+import com.stas.gchords.Util;
+import com.stas.gchords.actors.IntervalSelector;
+import com.stas.gchords.actors.PianoKeyboard;
 import com.stas.gchords.Resources;
 import com.stas.gchords.Synth;
 
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 
-public class PlayIntervalScreen extends AStageScreen {
-    Synth synth;
-    PlayIntervalTester tester;
-    PianoKeyboard pianoKeyboard;
-    Label stats;
+public class PlayIntervalScreen extends AStageScreen implements Receiver {
+    private Synth synth;
+    private PianoKeyboard pianoKeyboard;
+    private Label stats;
+    private IntervalSelector intervalSelector;
+
+    private int prev;
+    private int expected;
+    private int total, correct;
 
     private void refreshView() {
-        int correct = tester.getCorrect();
-        int total = tester.getTotal();
         double ratio = total == 0 ? 1 : (double)correct / total;
         stats.setText(String.format("%d/%d (%.2f%%)",  correct, total, ratio*100));
         pianoKeyboard.clearAllKeyMarks();
-        pianoKeyboard.setKeyMarked(tester.getPrevious(), true);
+        pianoKeyboard.setKeyMarked(prev, true);
     }
-
 
     @Override
     void init(Stage stage) {
         Skin skin = Resources.skin;
 
-        synth = new Synth("samples");
-        tester = new PlayIntervalTester(synth);
+        synth = new Synth(Resources.pianoSamples);
+        prev = 60;
+        expected = 60;
+        total = 0;
+        correct = 0;
+
         try {
-            App.getInstance().getMidiInDevice().getTransmitter().setReceiver(tester);
+            App.getInstance().getMidiInDevice().getTransmitter().setReceiver(this);
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
         }
@@ -58,32 +70,12 @@ public class PlayIntervalScreen extends AStageScreen {
                 36, 84);
 
         pianoKeyboard.setPosition(200, 450);
-        pianoKeyboard.setKeyMarked(tester.getPrevious(), true);
+        pianoKeyboard.setKeyMarked(prev, true);
         stage.addActor(pianoKeyboard);
 
-        final Interval[] intervals = Interval.values();
-
-        for(int i = 0; i < intervals.length; ++i) {
-            final CheckBox cb = new CheckBox(intervals[i].name(), skin);
-            cb.setPosition(100, 300 - i * 20);
-
-            final int finalI = i;
-            cb.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    tester.setIntervalEnabled(intervals[finalI], cb.isChecked());
-                }
-            });
-
-            stage.addActor(cb);
-        }
-
-        tester.setListener(new PlayIntervalTester.Listener() {
-            @Override
-            public void onUpdateTesterStats(int correct, int total) {
-                refreshView();
-            }
-        });
+        intervalSelector = new IntervalSelector(skin);
+        intervalSelector.setPosition(20, 300);
+        stage.addActor(intervalSelector);
 
         TextButton back = new TextButton("Back", skin);
         back.setPosition(Consts.IDEAL_SCR_W - 200, 100);
@@ -92,8 +84,95 @@ public class PlayIntervalScreen extends AStageScreen {
                App.setAppScreen(new MainScreen());
            }
         });
+
         stage.addActor(back);
+
+        refreshView();
     }
+
+
+
+
+    private void reset() {
+        prev = 60;
+        expected = 60;
+        total = 0;
+        correct = 0;
+
+        refreshView();
+    }
+
+    private void next() {
+        prev = expected;
+
+        if(intervalSelector.getSelectionCount() > 0) {
+            int e1 = expected;
+            do {
+                expected = e1 + intervalSelector.getRandomSelection().semitones * Util.randSign();
+            } while (expected < 36 || expected > 84);
+
+            synth.noteOn(expected);
+        }
+    }
+
+    private void replay() {
+        synth.noteOn(expected);
+    }
+
+
+    @Override
+    public void send(final MidiMessage midiMessage, long l) {
+        final byte[] data = midiMessage.getMessage();
+
+        System.out.println(midiMessage.getStatus());
+
+        //if(midiMessage.getStatus() == ShortMessage.NOTE_ON && data[2] > 0) {
+        //    synth.noteOn(data[1], 40);
+        //}
+
+        if(midiMessage.getStatus() == 153) {
+            synth.noteOn(prev);
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    synth.noteOn(expected);
+                }
+            }, 0.5f);
+
+        }
+
+        if(midiMessage.getStatus() == ShortMessage.NOTE_ON && data[2] == 0 || midiMessage.getStatus() == ShortMessage.NOTE_OFF) {
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if(data[1] == expected) {
+                        System.out.println("Correct!");
+                        ++correct;
+                        next();
+                    }else {
+                        System.out.println("Wrong!");
+                        replay();
+                    }
+
+                    ++total;
+
+                    refreshView();
+                }
+            }, 0.3f);
+        }
+    }
+
+    @Override
+    public void close() {
+    }
+
+
+
+
+
+
+
+
 
     @Override
     public void pause() {

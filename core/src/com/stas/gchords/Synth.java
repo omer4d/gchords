@@ -4,8 +4,8 @@ public class Synth {
     private InstrumentSample[] instrumentSamples;
     private int lastPlayed = 0;
 
-    public Synth(String sampleDir) {
-        instrumentSamples = InstrumentSample.load(sampleDir);
+    public Synth(InstrumentSample[] instrumentSamples) {
+        this.instrumentSamples = instrumentSamples;
     }
 
     public void noteOn(int idx) {

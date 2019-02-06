@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class Resources {
     public static Texture pianoWhiteKey, pianoBlackKey, rect;
     public static Skin skin;
+    public static InstrumentSample[] pianoSamples;
 
     private static Texture loadTexture(String path) {
         Texture tex = new Texture(path);
@@ -20,6 +21,7 @@ public class Resources {
         rect = loadTexture("rect.png");
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+        pianoSamples =  InstrumentSample.load("samples");
     }
 
     public static void dispose() {
@@ -27,5 +29,11 @@ public class Resources {
         pianoBlackKey.dispose();
         rect.dispose();
         skin.dispose();
+
+        for(int i = 0; i < pianoSamples.length; ++i) {
+            if(pianoSamples[i] != null) {
+                pianoSamples[i].sound.dispose();
+            }
+        }
     }
 }

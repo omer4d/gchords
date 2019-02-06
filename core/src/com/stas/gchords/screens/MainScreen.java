@@ -72,13 +72,34 @@ public class MainScreen extends AStageScreen {
         menu.center();
         stage.addActor(menu);
 
-        TextButton playIntervalTesterScreenBtn = new TextButton("play intervals", skin);
-        playIntervalTesterScreenBtn.addListener(new ClickListener() {
+
+
+
+        TextButton playIntervalScreenBtn = new TextButton("Play Intervals", skin);
+        playIntervalScreenBtn.addListener(new ClickListener() {
            public void clicked(InputEvent e, float x, float y) {
                App.setAppScreen(new PlayIntervalScreen());
            }
         });
-        menu.addActor(playIntervalTesterScreenBtn);
+        menu.addActor(playIntervalScreenBtn);
+
+        TextButton recIntervalScreenBtn = new TextButton("Recognize Intervals", skin);
+        recIntervalScreenBtn.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                App.setAppScreen(new PlayIntervalScreen());
+            }
+        });
+        menu.addActor(recIntervalScreenBtn);
+
+
+
+
+
+
+
+
+
+
 
         Label selectBoxTitle = new Label("MIDI in:", skin);
         menu.addActor(selectBoxTitle);

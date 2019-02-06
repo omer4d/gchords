@@ -1,4 +1,4 @@
-package com.stas.gchords;
+package com.stas.gchords.actors;
 
 
 import com.badlogic.gdx.graphics.Color;
