@@ -10,14 +10,21 @@ import com.stas.gchords.Interval;
 
 public class IntervalSelector extends Group {
     private Interval[] intervalSelected;
+    CheckBox[] checkBoxes;
 
-    private void setIntervalSelected(Interval interval, boolean flag) {
+    private void setIntervalSelectedHelper(Interval interval, boolean flag) {
         intervalSelected[interval.ordinal()] = flag ? interval : null;
+    }
+
+    public void setIntervalSelected(Interval interval, boolean flag) {
+        setIntervalSelectedHelper(interval, flag);
+        checkBoxes[interval.ordinal()].setChecked(flag);
     }
 
     public IntervalSelector(Skin skin) {
         final Interval[] intervals = Interval.values();
         intervalSelected = new Interval[intervals.length];
+        checkBoxes = new CheckBox[intervals.length];
 
         for(int i = 0; i < intervals.length; ++i) {
             final CheckBox cb = new CheckBox(intervals[i].name(), skin);
@@ -27,10 +34,11 @@ public class IntervalSelector extends Group {
             cb.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    setIntervalSelected(intervals[finalI], cb.isChecked());
+                    setIntervalSelectedHelper(intervals[finalI], cb.isChecked());
                 }
             });
 
+            checkBoxes[i] = cb;
             this.addActor(cb);
         }
     }

@@ -1,5 +1,8 @@
 package com.stas.gchords;
 
+
+import com.badlogic.gdx.utils.Timer;
+
 public class Synth {
     private InstrumentSample[] instrumentSamples;
     private int lastPlayed = 0;
@@ -18,5 +21,14 @@ public class Synth {
         instrumentSamples[lastPlayed].sound.stop();
         instrumentSamples[idx].play(vel / 127.f);
         lastPlayed = idx;
+    }
+
+    public void noteOn(final int idx, final int vel, float delay) {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                noteOn(idx, vel);
+            }
+        }, delay);
     }
 }

@@ -86,7 +86,7 @@ public class MainScreen extends AStageScreen {
         TextButton recIntervalScreenBtn = new TextButton("Recognize Intervals", skin);
         recIntervalScreenBtn.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
-                App.setAppScreen(new PlayIntervalScreen());
+                App.setAppScreen(new RecIntervalScreen());
             }
         });
         menu.addActor(recIntervalScreenBtn);
