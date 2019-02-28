@@ -1,4 +1,4 @@
-package com.stas.gchords;
+package com.stas.gchords.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.stas.gchords.Consts;
+import com.stas.gchords.Resources;
 
 public class Gui {
     private static class Event {
@@ -18,132 +20,6 @@ public class Gui {
 
         Event(Actor target) {
             this.target = target;
-        }
-    }
-
-    private enum LayoutCellFlag {
-        WIDTH_AUTO, WIDTH_FIXED, WIDTH_PROP
-    }
-
-    private interface LayoutCell {
-        void setBounds(float x, float y, float w, float h);
-        float contentDesiredHeight();
-        float contentDesiredWidth();
-    }
-
-    private static class ActorLayoutCell implements LayoutCell {
-        private Actor actor;
-        private float actorWidth, actorHeight;
-
-        public ActorLayoutCell(Actor actor) {
-            this.actor = actor;
-            this.actorWidth = actor.getWidth();
-            this.actorHeight = actor.getHeight();
-        }
-
-        public void setBounds(float x, float y, float w, float h) {
-            actor.setSize(w, h);
-            actor.setPosition(
-                    x + w / 2 - actor.getWidth() / 2,
-                    y + h / 2 - actor.getHeight() / 2
-            );
-        }
-
-        @Override
-        public float contentDesiredHeight() {
-            return actorWidth;
-        }
-
-        @Override
-        public float contentDesiredWidth() {
-            return actorHeight;
-        }
-    }
-
-    private static class PaneLayoutCell implements LayoutCell {
-        private Pane pane;
-
-        public PaneLayoutCell(Pane pane) {
-            this.pane = pane;
-        }
-
-        @Override
-        public void setBounds(float x, float y, float w, float h) {
-            pane.x = x;
-            pane.y = y;
-            pane.width = w;
-            pane.layout();
-        }
-
-        @Override
-        public float contentDesiredHeight() {
-            return pane.getHeight();
-        }
-
-        @Override
-        public float contentDesiredWidth() {
-            return 0;
-        }
-    }
-
-    private static class Pane {
-        private Array<Array<LayoutCell>> rows;
-        float x, y, width;
-        float spaceX = 2, spaceY = 2;
-
-        Pane() {
-            this.rows = new Array<Array<LayoutCell>>();
-        }
-
-        public void row() {
-            this.rows.add(new Array<LayoutCell>());
-        }
-
-        public void add(LayoutCell cell) {
-            rows.get(rows.size - 1).add(cell);
-        }
-
-        public float getHeight() {
-            float height = 0;
-
-            for(Array<LayoutCell> row : rows) {
-                float cellHeight = 0;
-
-                for(LayoutCell cell : row) {
-                    cellHeight = Math.max(cellHeight, cell.contentDesiredHeight());
-                }
-
-                height += cellHeight + spaceY;
-            }
-
-            height -= spaceY;
-            return height;
-        }
-
-        public void layout() {
-            float cellY = this.y;
-
-            for(Array<LayoutCell> row : rows) {
-                float cellHeight = 0;
-                float cellX = this.x;
-
-                for(LayoutCell cell : row) {
-                    cellHeight = Math.max(cellHeight, cell.contentDesiredHeight());
-                }
-
-                for(LayoutCell cell : row) {
-                    float cellWidth = (width - spaceX * (row.size - 1)) / row.size;
-                    cell.setBounds(cellX, cellY, cellWidth, cellHeight);
-                    cellX += cellWidth + spaceX;
-                }
-
-                cellY += cellHeight + spaceY;
-            }
-        }
-
-        public void clear() {
-            rows.clear();
-            row();
         }
     }
 
@@ -158,8 +34,6 @@ public class Gui {
         skin = Resources.skin;
         events = new Array<Event>();
         paneStack = new Array<Pane>();
-
-
     }
 
     public void begin(boolean touched, int pointerX, int pointerY) {
@@ -167,10 +41,9 @@ public class Gui {
         paneStack.clear();
 
         Pane pane = new Pane();
-        pane.width = 1024;
-        pane.x = 0;
-        pane.y = 0;
-        pane.rows.add(new Array<LayoutCell>());
+        pane.setWidth(1024);
+        pane.setPosition(0, 0);
+        pane.row();
         paneStack.add(pane);
 
         if(touched && !wasTouched) {
@@ -194,7 +67,7 @@ public class Gui {
         Pane parent = currPane();
 
         Pane pane = new Pane();
-        pane.rows.add(new Array<LayoutCell>());
+        pane.row();
         paneStack.add(pane);
 
         parent.add(new PaneLayoutCell(pane));

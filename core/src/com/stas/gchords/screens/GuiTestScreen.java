@@ -1,13 +1,9 @@
 package com.stas.gchords.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.utils.Array;
-import com.stas.gchords.Gui;
-
-import java.lang.reflect.Field;
+import com.stas.gchords.gui.Gui;
 
 public class GuiTestScreen implements Screen {
     Gui gui;
