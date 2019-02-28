@@ -3,6 +3,7 @@ package com.stas.gchords;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Timer;
+import com.stas.gchords.screens.GuiTestScreen;
 import com.stas.gchords.screens.MainScreen;
 
 import javax.sound.midi.MidiDevice;
@@ -48,7 +49,7 @@ public class App extends Game {
 	public void create() {
 		instance = this;
 		Resources.init();
-		setScreen(new MainScreen());
+		setScreen(new GuiTestScreen());
 	}
 
 	public void dispose() {
