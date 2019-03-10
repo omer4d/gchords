@@ -1,5 +1,6 @@
 package com.stas.gchords.gui;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 class ActorLayoutCell implements LayoutCell {
@@ -22,11 +23,16 @@ class ActorLayoutCell implements LayoutCell {
 
     @Override
     public float contentDesiredHeight() {
-        return actorWidth;
+        return actorHeight;
     }
 
     @Override
     public float contentDesiredWidth() {
-        return actorHeight;
+        return actorWidth;
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        actor.draw(batch, parentAlpha);
     }
 }

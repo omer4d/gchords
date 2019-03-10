@@ -1,11 +1,15 @@
 package com.stas.gchords.gui;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.stas.gchords.Resources;
 
 class Pane {
     private Array<Array<LayoutCell>> rows;
     private float x, y, width;
     private float spaceX = 2, spaceY = 2;
+    private float padX = 3, padY = 3;
 
     public Pane() {
         this.rows = new Array<Array<LayoutCell>>();
@@ -42,22 +46,22 @@ class Pane {
         }
 
         height -= spaceY;
-        return height;
+        return height + padY * 2;
     }
 
     public void layout() {
-        float cellY = this.y;
+        float cellY = this.y + padY;
 
         for(Array<LayoutCell> row : rows) {
             float cellHeight = 0;
-            float cellX = this.x;
+            float cellX = this.x + padX;
 
             for(LayoutCell cell : row) {
                 cellHeight = Math.max(cellHeight, cell.contentDesiredHeight());
             }
 
             for(LayoutCell cell : row) {
-                float cellWidth = (width - spaceX * (row.size - 1)) / row.size;
+                float cellWidth = (width - spaceX * (row.size - 1) - padX * 2) / row.size;
                 cell.setBounds(cellX, cellY, cellWidth, cellHeight);
                 cellX += cellWidth + spaceX;
             }
@@ -69,5 +73,15 @@ class Pane {
     public void clear() {
         rows.clear();
         row();
+    }
+
+    public void draw(Batch batch, float parentAlpha) {
+        Resources.skin.getDrawable("window-noborder").draw(batch, x, y, width, getHeight());
+
+        for(Array<LayoutCell> row : rows) {
+            for(LayoutCell cell : row) {
+                cell.draw(batch, parentAlpha);
+            }
+        }
     }
 }

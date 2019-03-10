@@ -1,5 +1,7 @@
 package com.stas.gchords.gui;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+
 class PaneLayoutCell implements LayoutCell {
     private Pane pane;
 
@@ -22,5 +24,10 @@ class PaneLayoutCell implements LayoutCell {
     @Override
     public float contentDesiredWidth() {
         return 0;
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        pane.draw(batch, parentAlpha);
     }
 }

@@ -1,7 +1,10 @@
 package com.stas.gchords.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -13,6 +16,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.stas.gchords.Consts;
 import com.stas.gchords.Resources;
+
+import java.util.HashMap;
 
 public class Gui {
     private static class Event {
@@ -28,12 +33,14 @@ public class Gui {
     private boolean wasTouched;
     private Array<Event> events;
     private Array<Pane> paneStack;
+    private HashMap<String, Actor> actors;
 
     public Gui() {
         stage = new Stage(new FitViewport(Consts.IDEAL_SCR_W, Consts.IDEAL_SCR_H));
         skin = Resources.skin;
         events = new Array<Event>();
         paneStack = new Array<Pane>();
+        actors = new HashMap<String, Actor>();
     }
 
     public void begin(boolean touched, int pointerX, int pointerY) {
@@ -60,7 +67,17 @@ public class Gui {
         stage.act(0.01f);
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
         stage.getViewport().apply();
-        stage.draw();
+
+        Camera camera = stage.getCamera();
+        camera.update();
+
+        Batch batch = stage.getBatch();
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        paneStack.get(0).draw(batch, 1.f);
+        batch.end();
+
+        //stage.draw();
     }
 
     public void beginPane() {
@@ -114,9 +131,6 @@ public class Gui {
         });
 
         stage.addActor(el);
-        Pane pane = currPane();
-        //pane.rows.get(pane.rows.size - 1).add(new ActorLayoutCell(el));
-        pane.add(new ActorLayoutCell(el));
     }
 
     public boolean textButton(String id, String text) {
@@ -127,6 +141,7 @@ public class Gui {
             initNewElement(el, id);
         }
 
+        currPane().add(new ActorLayoutCell(el));
         el.setText(text);
         return hasEvent(id);
     }
@@ -139,6 +154,7 @@ public class Gui {
             initNewElement(el, id);
         }
 
+        currPane().add(new ActorLayoutCell(el));
         el.setChecked(hasEvent(id) ? !checked : checked);
         el.setText(text);
         return el.isChecked();
@@ -152,6 +168,7 @@ public class Gui {
             initNewElement(el, id);
         }
 
+        currPane().add(new ActorLayoutCell(el));
         el.setText(text);
     }
 
@@ -167,6 +184,7 @@ public class Gui {
             el.setSelected(selection);
         }
 
+        currPane().add(new ActorLayoutCell(el));
         el.setItems(items);
 
         return el.getSelected();

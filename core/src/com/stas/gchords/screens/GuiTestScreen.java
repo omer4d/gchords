@@ -30,15 +30,35 @@ public class GuiTestScreen implements Screen {
         gui.begin(Gdx.input.isTouched(), Gdx.input.getX(), Gdx.input.getY());
 
         gui.beginPane();
-        gui.textButton("foo1", "one");
-        gui.textButton("foo2", "one");
-        gui.textButton("foo3", "one"); gui.row();
-        gui.textButton("foo4", "one"); gui.row();
+            gui.textButton("foo1", "one");
+
+
+            gui.textButton("foo2", "one");
+            gui.textButton("foo3", "one"); gui.row();
+            gui.textButton("foo4", "one"); gui.row();
+
+            gui.beginPane();
+                gui.textButton("bar1", "one");
+                gui.row();
+                gui.textButton("bar2", "one");
+            gui.endPane();
+
+            gui.beginPane();
+                gui.textButton("bar3", "one");
+                gui.row();
+                gui.textButton("bar4", "one");
+            gui.endPane();
+
         gui.endPane();
+
         gui.beginPane();
-        gui.textButton("foo5", "two"); gui.row();
-        check = gui.checkBox("cb", "foo", check);
+            gui.textButton("foo5", "two"); gui.row();
+            check = gui.checkBox("cb", "foo", check);
         gui.endPane();
+
+
+
+
 
 
 //        gui.textButton("foo", "one");
