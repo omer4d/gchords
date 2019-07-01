@@ -49,7 +49,8 @@ public class App extends Game {
 	public void create() {
 		instance = this;
 		Resources.init();
-		setScreen(new GuiTestScreen());
+		setScreen(new MainScreen());
+		//setScreen(new GuiTestScreen());
 	}
 
 	public void dispose() {
