@@ -11,8 +11,22 @@ public class Synth {
         this.instrumentSamples = instrumentSamples;
     }
 
+    public void stopAll() {
+        for(int i = 0; i < instrumentSamples.length; ++i) {
+            if(instrumentSamples[i] != null) {
+                instrumentSamples[i].sound.stop();
+            }
+        }
+    }
+
+    public void noteOn(int[] notes) {
+        for(int i = 0; i < notes.length; ++i) {
+            noteOn(notes[i]);
+        }
+    }
+
     public void noteOn(int idx) {
-        instrumentSamples[lastPlayed].sound.stop();
+        //instrumentSamples[lastPlayed].sound.stop();
         instrumentSamples[idx].play();
         lastPlayed = idx;
     }

@@ -91,7 +91,13 @@ public class MainScreen extends AStageScreen {
         });
         menu.addActor(recIntervalScreenBtn);
 
-
+        TextButton playChordScreenBtn = new TextButton("Play Chords", skin);
+        playChordScreenBtn.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                App.setAppScreen(new PlayChordScreen());
+            }
+        });
+        menu.addActor(playChordScreenBtn);
 
 
 

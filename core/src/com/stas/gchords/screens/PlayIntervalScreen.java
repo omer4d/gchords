@@ -111,6 +111,7 @@ public class PlayIntervalScreen extends AStageScreen implements Receiver {
                 expected = e1 + intervalSelector.getRandomSelection().semitones * Util.randSign();
             } while (expected < 36 || expected > 84);
 
+            synth.stopAll();
             synth.noteOn(expected);
         }
     }

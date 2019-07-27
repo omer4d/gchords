@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class PianoKeyboard extends Group {
     Group[] keys = new Group[128];
+    public  final int startKey;
+    public  final int endKey;
 
     public PianoKeyboard(TextureRegion pianoWhiteKey, TextureRegion pianoBlackKey, TextureRegion keyMark, int startKey, int endKey) {
         String patt = "wbwbwwbwbwbw";
@@ -16,6 +18,8 @@ public class PianoKeyboard extends Group {
         Group blackKeys = new Group();
         this.addActor(whiteKeys);
         this.addActor(blackKeys);
+        this.startKey = startKey;
+        this.endKey = endKey;
 
         for(int i = 0; i < endKey - startKey + 1; ++i) {
             boolean isWhite = patt.charAt((i + startKey) % patt.length()) == 'w';
@@ -38,6 +42,10 @@ public class PianoKeyboard extends Group {
 
             keys[i + startKey] = keyGroup;
         }
+    }
+
+    public boolean inRange(int idx) {
+        return idx >= startKey && idx <= endKey;
     }
 
     public void setKeyMarked(int idx, boolean marked) {
